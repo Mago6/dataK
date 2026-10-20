@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import statsmodels.api as sm
 
-# --- SOLUCIÓN DEFINITIVA PARA IDLE ---
+# --- Solucion para colores del IDLE---
 in_idle = 'idlelib' in sys.modules
 if in_idle:
     HAS_COLOR = False
@@ -19,7 +19,7 @@ else:
     except ImportError:
         HAS_COLOR = False
 
-# --- Librerías del agente ---
+# --- Librerias del agente para las preguntas a google, no puede hacer preguntas de dias anteriores, esto para mejora ---
 try:
     import feedparser
     from groq import Groq
@@ -29,7 +29,8 @@ except Exception as _e:
     _AGENTE_LIB_ERR = str(_e)
 
 # ---------------------------------------------------------------
-# CONFIGURACIÓN PORTABLE
+# CONFIGURACIÓN PORTABLE para la creacion de la carpeta, leer historico, creacion del dashboard para las gráficas, ventana de dias y proyecciones, groq key para el agente
+#                           tambien la toma de las variables de entorno.
 # ---------------------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CARPETA = os.path.join(BASE_DIR, "dn")
@@ -48,7 +49,7 @@ HORIZONTE_5A = 1260
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 
 # ---------------------------------------------------------------
-# COLORES
+# COLORES para las graficas 
 # ---------------------------------------------------------------
 class C:
     if HAS_COLOR:
@@ -66,7 +67,7 @@ def warn(t): print(f"{C.W}⚠ {t}{C.END}")
 def err(t):  print(f"{C.R}✗ {t}{C.END}")
 
 # ---------------------------------------------------------------
-# ESTADO GLOBAL
+# Estado de memoria para las x,y,z y cambios de pregunta del agente
 # ---------------------------------------------------------------
 class E:
     df = None
@@ -79,7 +80,7 @@ class E:
     horizonte = HORIZONTE_D
 
 # ---------------------------------------------------------------
-# 1) CARGAR Y AGREGAR DATOS
+# 1) Cargar datos del historico
 # ---------------------------------------------------------------
 def _procesar_df(df):
     df["Date"] = pd.to_datetime(df["Date"])
@@ -131,7 +132,7 @@ def agregar_datos():
         return False
 
 # ---------------------------------------------------------------
-# 2) ENTRENAMIENTO
+# 2) Entrenamieto por medio de los datos del historico, para sacar las rubricas, unas con z otras con xy por el modelo propio 
 # ---------------------------------------------------------------
 def _metricas(m, y):
     resid = m.resid.values
@@ -172,7 +173,7 @@ def entrenar_modelos():
     return True
 
 # ---------------------------------------------------------------
-# 3) PROYECCIONES
+# 3) Proyecciones de 1 a 5 anos.
 # ---------------------------------------------------------------
 def _mm3(serie, n, ventana=MM_VENTANA):
     vals = list(serie.tail(ventana).values)
@@ -337,7 +338,7 @@ def consultar_agente():
     nz = _noticias("precio cobre mineria")
     ctx = f"ACERO (X):\n{nx}\n\nALUMINIO (Y):\n{ny}\n\nCOBRE (Z):\n{nz}"
     prompt = """
-Eres un analista experto en commodities y costos de equipos.
+Eres un analista experto en proyectos de construccion y costos de equipos.
 Analiza las noticias y devuelve EXCLUSIVAMENTE un JSON:
 {
   "factores_ajuste": {"X": float, "Y": float, "Z": float},
@@ -404,7 +405,9 @@ def chat_interactivo():
 
     contexto_sistema = f"""
     Eres un Agente de IA experto en análisis de costos de materias primas.
-    Estás asistiendo a un gerente que está viendo un Dashboard con 10 gráficas.
+    Estás asistiendo a un gerente que está viendo un Dashboard con 10 gráficas, las cuales
+    te indican los datos de los equipos 1 y equipo2 los cuales tienen relacion con x,y,z nuestra tarea
+    es analizar los datos para poder dar un contexto correcto de las proyecciones a futuro
     
     TUS DATOS Y MODELOS (Tienes acceso a las métricas de los 4 modelos):
     - Equipo 1 (Principal ~Z): R²={E.met['Eq1_Z']['r2']:.4f}, MAPE={E.met['Eq1_Z']['mape']:.2f}%
@@ -430,7 +433,7 @@ def chat_interactivo():
     2. El Equipo 1 SÍ tiene un modelo que usa solo Z (Principal ~Z). Tienes sus datos futuros en la tabla de arriba.
     3. ACLARACIÓN: Eres un modelo de lenguaje. No puedes "ver" los gráficos visuales (como los de Plotly en el dashboard), pero SÍ tienes los datos numéricos que los componen, así que úsalos para responder.
     4. Si te preguntan por el dashboard, explica que no lo ves visualmente pero conoces todos los datos y métricas.
-    5. Si el usuario te pregunta algo fuera de este contexto, niégate amablemente.
+    5. Si el usuario te pregunta algo fuera de este contexto,tu deber es saber sobre construccion y el programa desarrollado, sobre los datos contenidos en este programa, niégate amablemente.
 
     Debes responder SIEMPRE en formato JSON con la siguiente estructura exacta:
     {{
@@ -481,7 +484,7 @@ def chat_interactivo():
             err(f"Error: {e}")
 
 # ---------------------------------------------------------------
-# 5) SIMULADOR Y 6) DASHBOARD
+# 5) Simulador de eventos cambiando x:80.1 y z Y 6) DASHBOARD con graficas
 # ---------------------------------------------------------------
 def simulador():
     hdr("5. SIMULADOR WHAT-IF")
