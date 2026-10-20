@@ -38,8 +38,14 @@ de 56 a 62 por poner un ejemplo con lo que decidimos, imitar ese comportamiento 
 procedio, a calcular monte carlo y de ahí partir de datos reales con una variacion de IC del 95% para determinar un rango aceptable de costos que no variara
 en error mucho, teniendo en cuenta cambios dia a dia, ya cuando se monto el modelo de IA utilizaba la proyeccion de las noticias para dar valores mas reales a 
 x, y, y z para poder determinar costos mas reales con las noticias, determinando el mismo x para el acero, etc,.
-
 ## 4. Resultados del análisis de los datos y los modelos
+Cuando notamos graficas similares analizamos datos proyectados a futuro de 30 dias, y finalmente fuimos comparando la informacion con el historico de equipos
+para ver cuanto empataban, vimos como cada modelo nos representaba lineas diferentes sobre las graficas en dashboard lo que nos permitio entender lo que mas se
+apegaba a una proyección de datos a futuro con monte carlo el modelo x+y para equipo 1 + la influencia del agente sobre x y z, con esto se determino que no solo 
+lo afectaba z y que el modelo x+y era mejor en R² = 0.9947
 ## 5. Proyección de costos y horizonte de predicción
+Se determino que se puede determinar costos de hasta 5 años con un el modelo propio el analizis de los registros de historico, asi como el monte carlo, pero cuando se analizo con el agente este determino que las variables x y z cambiaban segun la realidad de lo que pudo haber ocurrido como una guerra lo cual determina
+los picos en las graficas de historico de equipos real, lo cual determina que podemos imitar el comportamiento de esos datos con el modelo pero para predecir algo mas apegado a la realidad es necesario el cuestionamiento dia a dia del agente para que cambie los indices x y z conforme a los datos que determinemos acero, cobre, aluminio, etc esto le dara mas verasidad a los datos, el horizonte lo pondria a 30 dias despues de eso es necesario alimentar de datos. 
 ## 6. Futuros ajustes o mejoras
+teniendo en cuenta que ya cada dia a dia de futuro puede variar mucho el agente determina por noticias de dia, pero si ampliara la busqueda de los eventos que afectan la realidad seria mas preciso si buscara noticias para cambiar valores, tambien añadiria un en tiempo real para que se vea como van cambiando los datos, ingresando historicos de equipos, o x y z de años venideros para determinar
 ## 7. Apreciaciones y comentarios del caso (opcional)
